@@ -5,12 +5,14 @@ class ElasticBuild < BuilderPlugin
   attr_accessor :pool
   
   def build_started(build)
-    build.current_agent = BuildLoadBalancer.new(pool).next_agent
-    build.push_working_copy
+    if pool
+      build.current_agent = BuildLoadBalancer.new(pool).next_agent
+      build.push_working_copy
+    end
   end
   
   def build_finished(build)
-    build.pull_artifacts
+    build.pull_artifacts if pool
   end
   
 end

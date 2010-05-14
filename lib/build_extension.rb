@@ -2,16 +2,22 @@ module BuildExtension
   attr_accessor :current_agent
   
   def execute_with_ssh(cmd, options={}, &proc)
+    return execute_without_ssh(cmd, options, &proc) unless current_agent
     remote_cmd = "cd #{remote_checkout} && #{environment_variables} #{cmd}"
     execute_without_ssh(%Q[ssh #{current_agent} "#{remote_cmd}"], options, &proc)
   end
   
   def push_working_copy
-    rsync project.local_checkout, "#{current_agent}:#{remote_checkout}", "error rsyncing code to agent #{current_agent}"
+    remote_cmd = "mkdir -p #{remote_checkout} #{remote_artifacts}"
+    execute_without_ssh(%Q[ssh #{current_agent} "#{remote_cmd}"], :stdout => artifact('build.log'), :stderr => artifact('build.log'))
+    
+    rsync_cmd = "rsync -ravz --delete --exclude '.git/*' #{project.local_checkout}/ #{current_agent}:#{remote_checkout}"
+    locally_execute "#{rsync_cmd} 2>&1 >> #{artifact('build.log')}", "error rsyncing code to agent #{current_agent}"
   end
   
   def pull_artifacts
-    rsync "#{current_agent}:#{remote_artifacts}", artifacts_directory, "error rsyncing artifacts from agent #{current_agent}"
+    rsync_cmd = "rsync -avz #{current_agent}:#{remote_artifacts}/ #{artifacts_directory}"
+    locally_execute "#{rsync_cmd} 2>&1 >> #{artifact('build.log')}", "error rsyncing artifacts from agent #{current_agent}"
   end
   
   def remote_checkout
@@ -25,14 +31,7 @@ module BuildExtension
   def environment_variables
     "CC_BUILD_ARTIFACTS=#{remote_artifacts} CC_BUILD_LABEL=#{label} CC_BUILD_REVISION=#{revision}"
   end
-  
-  def rsync(from, to, error_message)
-    build_log = artifact 'build.log'
-    remote_cmd = "mkdir -p #{remote_checkout} #{remote_artifacts}"
-    execute_without_ssh(%Q[ssh #{current_agent} "#{remote_cmd}"], :stdout => build_log, :stderr => build_log)
-    locally_execute "rsync -ravz --delete --exclude '.git/*' #{from}/ #{to} 2>&1 >> #{build_log}", error_message
-  end
-  
+
   def locally_execute(cmd, error_message)
     `echo #{cmd.inspect} >> #{artifact 'build.log'}`
     `#{cmd}`

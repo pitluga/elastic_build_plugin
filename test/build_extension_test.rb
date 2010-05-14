@@ -28,8 +28,17 @@ class BuildExtensionTest < Test::Unit::TestCase
   end
   
   def test_pull_artifacts_should_execute_the_correct_rsync_command
-    @build.expects(:locally_execute).with("rsync -ravz --delete --exclude '.git/*' some-server.com:~/.cruise/agent/projectname/build-1234/ artifacts-dir 2>&1 >> build.log", anything)
+    @build.expects(:locally_execute).with("rsync -avz some-server.com:~/.cruise/agent/projectname/build-1234/ artifacts-dir 2>&1 >> build.log", anything)
     @build.pull_artifacts
+  end
+end
+
+class NoAgentBuildExtensionTest < Test::Unit::TestCase
+  
+  def test_execute_does_not_wrap_call
+    build = ExtendedBuild.new
+    build.execute("rake test")
+    assert_equal "rake test", build.executions.first[:cmd]
   end
 end
 
