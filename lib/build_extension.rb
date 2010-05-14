@@ -8,9 +8,16 @@ module BuildExtension
   end
   
   def push_working_copy
+    create_remote_directories
+    rsync_working_copy
+  end
+  
+  def create_remote_directories
     remote_cmd = "mkdir -p #{remote_checkout} #{remote_artifacts}"
-    execute_without_ssh(%Q[ssh #{current_agent} "#{remote_cmd}"], :stdout => artifact('build.log'), :stderr => artifact('build.log'))
-    
+    execute_without_ssh(%Q[ssh #{current_agent} "#{remote_cmd}"], :stdout => artifact('build.log'), :stderr => artifact('build.log'))    
+  end
+  
+  def rsync_working_copy
     rsync_cmd = "rsync -ravz --delete --exclude '.git/*' #{project.local_checkout}/ #{current_agent}:#{remote_checkout}"
     locally_execute "#{rsync_cmd} 2>&1 >> #{artifact('build.log')}", "error rsyncing code to agent #{current_agent}"
   end
@@ -33,7 +40,7 @@ module BuildExtension
   end
 
   def locally_execute(cmd, error_message)
-    `echo #{cmd.inspect} >> #{artifact 'build.log'}`
+    `echo #{Platform.prompt} #{cmd.inspect} >> #{artifact 'build.log'}`
     `#{cmd}`
     raise error_message unless $?.success?
   end
