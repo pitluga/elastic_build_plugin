@@ -12,10 +12,8 @@ Installation:
 * copy the contents of the repositories lib directory into ~/.cruise/builder_plugins/
 * create the pools configuration directory in ~/.cruise/pools/
 * create files for each of the pools you wish to use, example: ~/.cruise/pools/testpool
-<pre>
 server-a.com
 server-b.com
-</pre>
 * set up ssh keys between the server running cc.rb and your agent boxes
 
 Next Steps
