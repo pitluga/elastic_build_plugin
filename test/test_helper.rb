@@ -12,4 +12,4 @@ class Project
   def self.plugin(*args); end
 end
 
-require File.expand_path(File.dirname(__FILE__) + "/../lib/elastic_build_plugin")
+require File.expand_path(File.dirname(__FILE__) + "/../lib/elastic_build")

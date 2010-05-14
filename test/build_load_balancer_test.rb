@@ -11,6 +11,12 @@ class BuildLoadBalancerTest < Test::Unit::TestCase
     create_server_file(load_balancer, %w(a b c))
     assert_equal "a", load_balancer.next_agent
   end
+
+  def test_allowing_symbols_as_pool_name
+    load_balancer = BuildLoadBalancer.new(:testpool)
+    create_server_file(load_balancer, %w(a b c))
+    assert_equal "a", load_balancer.next_agent
+  end
   
   def test_fetching_next_server_returns_next_in_file
     load_balancer = BuildLoadBalancer.new("testpool")

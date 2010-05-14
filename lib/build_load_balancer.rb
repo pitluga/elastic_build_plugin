@@ -2,7 +2,7 @@ class BuildLoadBalancer
   attr_reader :pool_name
   
   def initialize(pool_name)
-    @pool_name = pool_name
+    @pool_name = pool_name.to_s
   end
 
   def server_file
