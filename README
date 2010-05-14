@@ -1,1 +1,26 @@
-This is very much a spike. I have no idea if this works. Check back later.
+Elastic Build is a plugin for cruisecontrol.rb that aims to provide transparent scaling of your builds over a collection of boxes. This works by allowing you to associate your builds with a pool of agents. The elastic build plugin will distribute your builds across the build agents in a round-robin fashion.
+
+Design Principals:
+
+* Transparent - you should not have to worry about the fact that your builds run on other boxes.
+* Centralized - zero software needs installed on the agent machines (besides what you need to run your application)
+* Simple - the only additional configuration needed are the pool files, which are just a simple list of server names
+
+Installation:
+
+* git clone this repository
+* copy the contents of the repositories lib directory into ~/.cruise/builder_plugins/
+* create the pools configuration directory in ~/.cruise/pools/
+* create files for each of the pools you wish to use, example: ~/.cruise/pools/testpool
+<pre>
+server-a.com
+server-b.com
+</pre>
+* set up ssh keys between the server running cc.rb and your agent boxes
+
+Next Steps
+* script the installation
+* integrate current agent into the build page/dashboard
+* add some sort of utilization metrics for the agents
+* script adding/removing agents with EC2
+* make this a gem?
