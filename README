@@ -15,8 +15,13 @@ Installation:
 server-a.com
 server-b.com
 * set up ssh keys between the server running cc.rb and your agent boxes
+* In your cruise build configuration, assign your builds to pools like so
 
-Next Steps
+project.elastic_build.pool = :testpool
+
+
+Next Steps:
+
 * script the installation
 * integrate current agent into the build page/dashboard
 * add some sort of utilization metrics for the agents
