@@ -10,7 +10,7 @@ class ElasticBuild < BuilderPlugin
   end
   
   def build_finished(build)
-    #rsync artifacts
+    build.pull_artifacts
   end
   
 end

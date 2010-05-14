@@ -16,4 +16,10 @@ class ElasticBuildTest < Test::Unit::TestCase
     build.expects(:push_working_copy)
     ElasticBuild.new.build_started(build)
   end
+  
+  def test_build_finished_should_pull_artifacts
+    build = Build.new
+    build.expects(:pull_artifacts)
+    ElasticBuild.new.build_finished(build)    
+  end
 end
